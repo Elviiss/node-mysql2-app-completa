@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const pool = require('../database')
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('ZONA LINKS');
+router.get('/', async (req, res, next) => {
+  const [result] = await pool.query('SELECT 1 + 1')
+  res.json(result)
+  //res.send
 });
 
 module.exports = router;
