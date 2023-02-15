@@ -45,6 +45,7 @@ router.post('/edit/:id', async (req, res) => {
     description
   }
   await pool.query('UPDATE links SET ? WHERE id = ?', [newLink, id])
+  req.flash('success', 'Link saves successfully')
   res.redirect('/links')
 })
 
