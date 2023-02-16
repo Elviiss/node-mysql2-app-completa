@@ -6,8 +6,8 @@ USE database_links;
 CREATE TABLE users(
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(20) NOT NULL,
-  password VARCHAR(25) NOT NULL,
-  email VARCHAR(25) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  email VARCHAR(120) NOT NULL,
   fullname VARCHAR(100) NOT NULL
 );
 

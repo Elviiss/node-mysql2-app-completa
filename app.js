@@ -3,58 +3,69 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const {engine} = require('express-handlebars')
+const { engine } = require('express-handlebars')
 const flash = require('connect-flash')
 const session = require('express-session')
 const smysql = require('express-mysql-session')
-const {database} = require('./keys')
-
+const { database } = require('./keys')
+const passport = require('passport')
 
 const indexRouter = require('./routes/index');
 const linksRouter = require('./routes/links');
 const authenticationRouter = require('./routes/authentication');
+
+//Initializations
 const app = express();
+require('./lib/passport')
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('.hbs', engine({
-  defaultLayout: 'main', 
-  layoutsDir: path.join(app.get('views'), 'layouts'),
-  partialsdir: path.join(app.get('views'), 'partials'),
+  defaultLayout: 'main',
+  layoutsDir:  path.join(app.get('views'), 'layouts'),
+  partialsDir:  path.join(app.get('views'), 'partials'),
   extname: '.hbs',
   helpers: require('./lib/handlebars'),
   runtimeOptions: {
-    allowProtoMethodsByDefault: true,
+    allowProtoPropertiesByDefault: true,
     allowProtoMethodsByDefault: true
   }
 }))
+
 app.set('view engine', '.hbs');
 
-
+//Middlewares
 app.use(session({
   secret: 'patata',
   resave: false,
   saveUninitialized: false,
   store: new smysql(database)
 }))
+
+app.use(flash())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(flash())
+app.use(passport.initialize())
+app.use(passport.session())
 
 
-//GLOBAL VARIABLES
-app.use((req,res,next) => {
+
+//Global Variables
+app.use((req, res, next) => {
   app.locals.success = req.flash('success')
   next()
-})
 
-//ROUTES
+})
+//Routes
 app.use('/', indexRouter);
-app.use('/links', linksRouter);
 app.use('/', authenticationRouter);
+app.use('/links', linksRouter);
+
+
+//Public
+app.use(express.static(path.join(__dirname, 'public')));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -71,6 +82,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
 
 module.exports = app;
