@@ -22,7 +22,11 @@ app.engine('.hbs', engine({
   layoutsDir: path.join(app.get('views'), 'layouts'),
   partialsdir: path.join(app.get('views'), 'partials'),
   extname: '.hbs',
-  helpers: require('./lib/handlebars')
+  helpers: require('./lib/handlebars'),
+  runtimeOptions: {
+    allowProtoMethodsByDefault: true,
+    allowProtoMethodsByDefault: true
+  }
 }))
 app.set('view engine', '.hbs');
 
@@ -50,7 +54,7 @@ app.use((req,res,next) => {
 //ROUTES
 app.use('/', indexRouter);
 app.use('/links', linksRouter);
-app.use('/authentication', authenticationRouter);
+app.use('/', authenticationRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
